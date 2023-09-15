@@ -5,6 +5,11 @@ from collections import namedtuple
 PreferenceMatch = namedtuple("PreferenceMatch", ["product_name", "product_codes"])
 
 def main(product_data, include_tags, exclude_tags):
+    """
+    Returns a list of Namedtuples : ("PreferenceMatch", ["product_name", "product_codes"])
+
+    Includes all include_tag products with exclude_tags taking priority
+    """
     # Convert tags to set for reduced lookup time
     include_tags_set = set(include_tags)
     exclude_tags_set = set(exclude_tags)
@@ -24,9 +29,8 @@ def main(product_data, include_tags, exclude_tags):
 
             pref_dic[product["name"]].product_codes.append(product["code"])
 
-    # Convert to required format
+    # Convert to return format
     return list(pref_dic.values())
-
 
 if __name__ == "__main__":
 
