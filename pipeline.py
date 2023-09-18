@@ -4,32 +4,41 @@ from collections import namedtuple
 
 PreferenceMatch = namedtuple("PreferenceMatch", ["product_name", "product_codes"])
 
-def main(product_data, include_tags, exclude_tags):
+def main(product_data: list[dict], include_tags: list[str], exclude_tags: list[str]) -> list[PreferenceMatch]:
     """
-    Returns a list of Namedtuples : ("PreferenceMatch", ["product_name", "product_codes"])
+    Returns all products with atleast one include_tag, excluding those with an exclude_tags
 
-    Includes all include_tag products with exclude_tags taking priority
+    args:
+        product_data: list[Dic[
+                        name: str,
+                        tags: list[str],
+                        code: str
+                        ]]
+
+    return:
+        NamedTuple: ("PreferenceMatch", ["product_name", "product_codes"])
     """
     # Convert tags to set for reduced lookup time
     include_tags_set = set(include_tags)
     exclude_tags_set = set(exclude_tags)
-
     # Dic for access speed 
     pref_dic = {}
 
     for product in product_data:
         # Include all products in product_data
-        if product["name"] not in pref_dic:
-            pref_dic[product["name"]] = PreferenceMatch(product_name=product["name"], product_codes=[])
-        
-        if any(tag in product["tags"] for tag in include_tags_set):
+        try:
+            if product["name"] not in pref_dic:
+                pref_dic[product["name"]] = PreferenceMatch(product_name=product["name"], product_codes=[])
+            
+            if any(tag in product["tags"] for tag in include_tags_set):
 
-            if any(tag in product["tags"] for tag in exclude_tags_set):
-                continue
+                if any(tag in product["tags"] for tag in exclude_tags_set):
+                    continue
 
-            pref_dic[product["name"]].product_codes.append(product["code"])
+                pref_dic[product["name"]].product_codes.append(product["code"])
+        except KeyError:
+            continue
 
-    # Convert to return format
     return list(pref_dic.values())
 
 if __name__ == "__main__":
